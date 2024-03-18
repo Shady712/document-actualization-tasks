@@ -48,6 +48,9 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.2.27")
 	implementation("com.zaxxer:HikariCP")
 
+	// Utils
+	implementation("org.apache.commons:commons-lang3:3.12.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
