@@ -1,109 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ntogbx" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.10.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
-  <bpmn:process id="TaskCreationProcess" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1">
+  <bpmn:collaboration id="Collaboration_140c2sk">
+    <bpmn:participant id="TaskCreationParticipant" name="Создание задачи" processRef="TaskCreationProcess" />
+  </bpmn:collaboration>
+  <bpmn:process id="TaskCreationProcess" name="Процесс создания задачи" isExecutable="true">
+    <bpmn:startEvent id="TaskCreationStartEvent" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:outgoing>Flow_195ubx7</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="Gateway_1q3mqkn" name="Нужно принудительно создать задачу?">
+    <bpmn:exclusiveGateway id="ForceCreateGateway" name="Нужно принудительно создать задачу?" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_195ubx7</bpmn:incoming>
       <bpmn:outgoing>Flow_13acuoh</bpmn:outgoing>
       <bpmn:outgoing>Flow_0ebjnlb</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_195ubx7" sourceRef="StartEvent_1" targetRef="Gateway_1q3mqkn" />
-    <bpmn:serviceTask id="TaskSearchActivity" name="Поиск существующей задачи" camunda:delegateExpression="${taskSearchDelegate}">
+    <bpmn:serviceTask id="TaskSearchActivity" name="Поиск существующей задачи" camunda:asyncBefore="true" camunda:exclusive="false" camunda:delegateExpression="${taskSearchDelegate}">
       <bpmn:incoming>Flow_13acuoh</bpmn:incoming>
       <bpmn:outgoing>Flow_1jriwoa</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_13acuoh" name="Нет" sourceRef="Gateway_1q3mqkn" targetRef="TaskSearchActivity">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("forceTaskCreation") != true}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_0kuqkgj" name="Задача найдена?">
+    <bpmn:exclusiveGateway id="TaskFoundGateway" name="Задача найдена?" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_1jriwoa</bpmn:incoming>
       <bpmn:outgoing>Flow_17paloe</bpmn:outgoing>
       <bpmn:outgoing>Flow_1ue9ijn</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1jriwoa" sourceRef="TaskSearchActivity" targetRef="Gateway_0kuqkgj" />
-    <bpmn:exclusiveGateway id="Gateway_1aavx49">
+    <bpmn:exclusiveGateway id="CreateTaskGateway" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_0ebjnlb</bpmn:incoming>
       <bpmn:incoming>Flow_17paloe</bpmn:incoming>
       <bpmn:outgoing>Flow_0z34gj9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0ebjnlb" name="Да" sourceRef="Gateway_1q3mqkn" targetRef="Gateway_1aavx49">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("forceTaskCreation") == true}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_17paloe" name="Нет" sourceRef="Gateway_0kuqkgj" targetRef="Gateway_1aavx49">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("taskId") == null}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="ChildExtensionSearchActivity" name="Поиск дочернего расширения" camunda:delegateExpression="${childExtensionSearchDelegate}">
+    <bpmn:serviceTask id="ChildExtensionSearchActivity" name="Поиск дочернего расширения" camunda:asyncBefore="true" camunda:exclusive="false" camunda:delegateExpression="${childExtensionSearchDelegate}">
       <bpmn:incoming>Flow_1ue9ijn</bpmn:incoming>
       <bpmn:outgoing>Flow_0l24gmf</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="Gateway_0p11jzx" name="Дочернее расширение найдено?">
+    <bpmn:exclusiveGateway id="ChildExtensionFoundGateway" name="Дочернее расширение найдено?" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_0l24gmf</bpmn:incoming>
       <bpmn:incoming>Flow_0xqhi7b</bpmn:incoming>
       <bpmn:outgoing>Flow_0mnc1q7</bpmn:outgoing>
       <bpmn:outgoing>Flow_17telko</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1ue9ijn" name="Да" sourceRef="Gateway_0kuqkgj" targetRef="ChildExtensionSearchActivity">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("taskId") != null}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0l24gmf" sourceRef="ChildExtensionSearchActivity" targetRef="Gateway_0p11jzx" />
-    <bpmn:serviceTask id="CreateTaskActivity" name="Создание задачи" camunda:delegateExpression="${createTaskDelegate}">
+    <bpmn:serviceTask id="CreateTaskActivity" name="Создание задачи" camunda:asyncBefore="true" camunda:exclusive="false" camunda:delegateExpression="${createTaskDelegate}">
       <bpmn:incoming>Flow_0z34gj9</bpmn:incoming>
       <bpmn:outgoing>Flow_0xqhi7b</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0z34gj9" sourceRef="Gateway_1aavx49" targetRef="CreateTaskActivity" />
-    <bpmn:sequenceFlow id="Flow_0xqhi7b" sourceRef="CreateTaskActivity" targetRef="Gateway_0p11jzx" />
-    <bpmn:exclusiveGateway id="Gateway_1b2gxun">
+    <bpmn:exclusiveGateway id="CreatedChildExtensionGateway" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_1bxhosp</bpmn:incoming>
       <bpmn:incoming>Flow_17telko</bpmn:incoming>
       <bpmn:outgoing>Flow_02ym7xk</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="CreateChildExtensionActivity" name="Создание дочернего расширения" camunda:delegateExpression="${createChildExtensionDelegate}">
+    <bpmn:serviceTask id="CreateChildExtensionActivity" name="Создание дочернего расширения" camunda:asyncBefore="true" camunda:exclusive="false" camunda:delegateExpression="${createChildExtensionDelegate}">
       <bpmn:incoming>Flow_0mnc1q7</bpmn:incoming>
       <bpmn:outgoing>Flow_1bxhosp</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0mnc1q7" name="Нет" sourceRef="Gateway_0p11jzx" targetRef="CreateChildExtensionActivity">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("childId") == null}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1bxhosp" sourceRef="CreateChildExtensionActivity" targetRef="Gateway_1b2gxun" />
-    <bpmn:sequenceFlow id="Flow_17telko" name="Да" sourceRef="Gateway_0p11jzx" targetRef="Gateway_1b2gxun">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("childId") != null}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:exclusiveGateway id="Gateway_05vefgf" name="Нужно завершить задачу?">
+    <bpmn:exclusiveGateway id="TaskCompleteGateway" name="Нужно завершить задачу?" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_02ym7xk</bpmn:incoming>
       <bpmn:outgoing>Flow_1icvsm0</bpmn:outgoing>
       <bpmn:outgoing>Flow_10ide8o</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_02ym7xk" sourceRef="Gateway_1b2gxun" targetRef="Gateway_05vefgf" />
-    <bpmn:exclusiveGateway id="Gateway_1x0o68r">
+    <bpmn:serviceTask id="TaskCompleteActivity" name="Завершение задачи" camunda:asyncBefore="true" camunda:exclusive="false" camunda:delegateExpression="${taskCompleteDelegate}">
+      <bpmn:incoming>Flow_10ide8o</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ditk9j</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="CompletedTaskGateway" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_1icvsm0</bpmn:incoming>
       <bpmn:incoming>Flow_1ditk9j</bpmn:incoming>
       <bpmn:outgoing>Flow_0sglmgb</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="TaskCompleteActivity" name="Завершение задачи" camunda:delegateExpression="${taskCompleteDelegate}">
-      <bpmn:incoming>Flow_10ide8o</bpmn:incoming>
-      <bpmn:outgoing>Flow_1ditk9j</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1icvsm0" name="Нет" sourceRef="Gateway_05vefgf" targetRef="Gateway_1x0o68r">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("shouldFinishTask") != true}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_10ide8o" name="Да" sourceRef="Gateway_05vefgf" targetRef="TaskCompleteActivity">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("shouldFinishTask") == true}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1ditk9j" sourceRef="TaskCompleteActivity" targetRef="Gateway_1x0o68r" />
-    <bpmn:endEvent id="Event_0gu4uj7">
+    <bpmn:endEvent id="TaskCreationEndEvent" camunda:asyncBefore="true" camunda:exclusive="false">
       <bpmn:incoming>Flow_0sglmgb</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0sglmgb" sourceRef="Gateway_1x0o68r" targetRef="Event_0gu4uj7" />
+    <bpmn:sequenceFlow id="Flow_195ubx7" sourceRef="TaskCreationStartEvent" targetRef="ForceCreateGateway" />
+    <bpmn:sequenceFlow id="Flow_13acuoh" name="Нет" sourceRef="ForceCreateGateway" targetRef="TaskSearchActivity">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("forceTaskCreation") != true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0ebjnlb" name="Да" sourceRef="ForceCreateGateway" targetRef="CreateTaskGateway">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("forceTaskCreation") == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1jriwoa" sourceRef="TaskSearchActivity" targetRef="TaskFoundGateway" />
+    <bpmn:sequenceFlow id="Flow_17paloe" name="Нет" sourceRef="TaskFoundGateway" targetRef="CreateTaskGateway">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("taskId") == null}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ue9ijn" name="Да" sourceRef="TaskFoundGateway" targetRef="ChildExtensionSearchActivity">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("taskId") != null}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0z34gj9" sourceRef="CreateTaskGateway" targetRef="CreateTaskActivity" />
+    <bpmn:sequenceFlow id="Flow_0l24gmf" sourceRef="ChildExtensionSearchActivity" targetRef="ChildExtensionFoundGateway" />
+    <bpmn:sequenceFlow id="Flow_0xqhi7b" sourceRef="CreateTaskActivity" targetRef="ChildExtensionFoundGateway" />
+    <bpmn:sequenceFlow id="Flow_0mnc1q7" name="Нет" sourceRef="ChildExtensionFoundGateway" targetRef="CreateChildExtensionActivity">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("childId") == null}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_17telko" name="Да" sourceRef="ChildExtensionFoundGateway" targetRef="CreatedChildExtensionGateway">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("childId") != null}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1bxhosp" sourceRef="CreateChildExtensionActivity" targetRef="CreatedChildExtensionGateway" />
+    <bpmn:sequenceFlow id="Flow_02ym7xk" sourceRef="CreatedChildExtensionGateway" targetRef="TaskCompleteGateway" />
+    <bpmn:sequenceFlow id="Flow_1icvsm0" name="Нет" sourceRef="TaskCompleteGateway" targetRef="CompletedTaskGateway">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("shouldFinishTask") != true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_10ide8o" name="Да" sourceRef="TaskCompleteGateway" targetRef="TaskCompleteActivity">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("shouldFinishTask") == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ditk9j" sourceRef="TaskCompleteActivity" targetRef="CompletedTaskGateway" />
+    <bpmn:sequenceFlow id="Flow_0sglmgb" sourceRef="CompletedTaskGateway" targetRef="TaskCreationEndEvent" />
     <bpmn:textAnnotation id="TextAnnotation_081h5n0">
       <bpmn:text>Старт процесса</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_1ngsxav" sourceRef="StartEvent_1" targetRef="TextAnnotation_081h5n0" />
     <bpmn:textAnnotation id="TextAnnotation_1pxq8o8">
       <bpmn:text>Конец процесса</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_0n7dor9" sourceRef="Event_0gu4uj7" targetRef="TextAnnotation_1pxq8o8" />
+    <bpmn:textAnnotation id="TextAnnotation_1xttux9">
+      <bpmn:text>Output:
+taskId</bpmn:text>
+    </bpmn:textAnnotation>
     <bpmn:textAnnotation id="TextAnnotation_1j4184y">
       <bpmn:text>Input:
 clientId
@@ -112,196 +117,198 @@ childDesc
 shouldFinishTask
 forceTaskCreation</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:textAnnotation id="TextAnnotation_1xttux9">
-      <bpmn:text>Output:
-taskId</bpmn:text>
-    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1ngsxav" sourceRef="TaskCreationStartEvent" targetRef="TextAnnotation_081h5n0" />
+    <bpmn:association id="Association_0n7dor9" sourceRef="TaskCreationEndEvent" targetRef="TextAnnotation_1pxq8o8" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TaskCreationProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_140c2sk">
+      <bpmndi:BPMNShape id="Participant_1bic4zp_di" bpmnElement="TaskCreationParticipant" isHorizontal="true">
+        <dc:Bounds x="154" y="63" width="1670" height="490" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_081h5n0_di" bpmnElement="TextAnnotation_081h5n0">
-        <dc:Bounds x="147" y="250" width="100" height="41" />
+        <dc:Bounds x="207" y="250" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_1pxq8o8_di" bpmnElement="TextAnnotation_1pxq8o8">
-        <dc:Bounds x="1640" y="230" width="99.9959660068847" height="40.44750430292599" />
+        <dc:Bounds x="1700" y="230" width="99.9959660068847" height="40.44750430292599" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1a6iw8d" bpmnElement="TextAnnotation_1xttux9">
-        <dc:Bounds x="1640" y="86" width="100" height="41" />
+        <dc:Bounds x="1700" y="86" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_02gvom2" bpmnElement="TextAnnotation_1j4184y">
-        <dc:Bounds x="147" y="110" width="133" height="98" />
+        <dc:Bounds x="207" y="110" width="133" height="98" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="179" y="329" width="36" height="36" />
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="TaskCreationStartEvent">
+        <dc:Bounds x="239" y="329" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1q3mqkn_di" bpmnElement="Gateway_1q3mqkn" isMarkerVisible="true">
-        <dc:Bounds x="285" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_1q3mqkn_di" bpmnElement="ForceCreateGateway" isMarkerVisible="true">
+        <dc:Bounds x="345" y="322" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="268" y="280" width="84" height="40" />
+          <dc:Bounds x="328" y="280" width="84" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1wnkgkl_di" bpmnElement="TaskSearchActivity">
-        <dc:Bounds x="420" y="307" width="100" height="80" />
+        <dc:Bounds x="480" y="307" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0kuqkgj_di" bpmnElement="Gateway_0kuqkgj" isMarkerVisible="true">
-        <dc:Bounds x="615" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_0kuqkgj_di" bpmnElement="TaskFoundGateway" isMarkerVisible="true">
+        <dc:Bounds x="675" y="322" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="595" y="292" width="90" height="14" />
+          <dc:Bounds x="655" y="292" width="90" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1aavx49_di" bpmnElement="Gateway_1aavx49" isMarkerVisible="true">
-        <dc:Bounds x="615" y="465" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_1aavx49_di" bpmnElement="CreateTaskGateway" isMarkerVisible="true">
+        <dc:Bounds x="675" y="465" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0y25tr1" bpmnElement="ChildExtensionSearchActivity">
-        <dc:Bounds x="760" y="307" width="100" height="80" />
+        <dc:Bounds x="820" y="307" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0p11jzx_di" bpmnElement="Gateway_0p11jzx" isMarkerVisible="true">
-        <dc:Bounds x="945" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_0p11jzx_di" bpmnElement="ChildExtensionFoundGateway" isMarkerVisible="true">
+        <dc:Bounds x="1005" y="322" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="988" y="360" width="64" height="40" />
+          <dc:Bounds x="1048" y="360" width="64" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_179pi11" bpmnElement="CreateTaskActivity">
-        <dc:Bounds x="760" y="450" width="100" height="80" />
+        <dc:Bounds x="820" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1b2gxun_di" bpmnElement="Gateway_1b2gxun" isMarkerVisible="true">
-        <dc:Bounds x="1175" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_1b2gxun_di" bpmnElement="CreatedChildExtensionGateway" isMarkerVisible="true">
+        <dc:Bounds x="1235" y="322" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1edm7vy" bpmnElement="CreateChildExtensionActivity">
-        <dc:Bounds x="1040" y="170" width="100" height="80" />
+        <dc:Bounds x="1100" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_05vefgf_di" bpmnElement="Gateway_05vefgf" isMarkerVisible="true">
-        <dc:Bounds x="1305" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_05vefgf_di" bpmnElement="TaskCompleteGateway" isMarkerVisible="true">
+        <dc:Bounds x="1365" y="322" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1303" y="379" width="55" height="40" />
+          <dc:Bounds x="1363" y="379" width="55" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1jby1e3" bpmnElement="TaskCompleteActivity">
-        <dc:Bounds x="1390" y="170" width="100" height="80" />
+        <dc:Bounds x="1450" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1x0o68r_di" bpmnElement="Gateway_1x0o68r" isMarkerVisible="true">
-        <dc:Bounds x="1525" y="322" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_1x0o68r_di" bpmnElement="CompletedTaskGateway" isMarkerVisible="true">
+        <dc:Bounds x="1585" y="322" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0gu4uj7_di" bpmnElement="Event_0gu4uj7">
-        <dc:Bounds x="1672" y="329" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0gu4uj7_di" bpmnElement="TaskCreationEndEvent">
+        <dc:Bounds x="1732" y="329" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1649" y="202" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_1ngsxav_di" bpmnElement="Association_1ngsxav">
-        <di:waypoint x="197" y="329" />
-        <di:waypoint x="197" y="291" />
+        <di:waypoint x="257" y="329" />
+        <di:waypoint x="257" y="291" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_0n7dor9_di" bpmnElement="Association_0n7dor9">
-        <di:waypoint x="1690" y="329" />
-        <di:waypoint x="1690" y="270" />
+        <di:waypoint x="1750" y="329" />
+        <di:waypoint x="1750" y="270" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_195ubx7_di" bpmnElement="Flow_195ubx7">
-        <di:waypoint x="215" y="347" />
-        <di:waypoint x="285" y="347" />
+        <di:waypoint x="275" y="347" />
+        <di:waypoint x="345" y="347" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_13acuoh_di" bpmnElement="Flow_13acuoh">
-        <di:waypoint x="335" y="347" />
-        <di:waypoint x="420" y="347" />
+        <di:waypoint x="395" y="347" />
+        <di:waypoint x="480" y="347" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="368" y="329" width="19" height="14" />
+          <dc:Bounds x="428" y="329" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ebjnlb_di" bpmnElement="Flow_0ebjnlb">
-        <di:waypoint x="310" y="372" />
-        <di:waypoint x="310" y="490" />
-        <di:waypoint x="615" y="490" />
+        <di:waypoint x="370" y="372" />
+        <di:waypoint x="370" y="490" />
+        <di:waypoint x="675" y="490" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="318" y="428" width="14" height="14" />
+          <dc:Bounds x="378" y="428" width="14" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jriwoa_di" bpmnElement="Flow_1jriwoa">
-        <di:waypoint x="520" y="347" />
-        <di:waypoint x="615" y="347" />
+        <di:waypoint x="580" y="347" />
+        <di:waypoint x="675" y="347" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_17paloe_di" bpmnElement="Flow_17paloe">
-        <di:waypoint x="640" y="372" />
-        <di:waypoint x="640" y="465" />
+        <di:waypoint x="700" y="372" />
+        <di:waypoint x="700" y="465" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="646" y="416" width="19" height="14" />
+          <dc:Bounds x="706" y="416" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ue9ijn_di" bpmnElement="Flow_1ue9ijn">
-        <di:waypoint x="665" y="347" />
-        <di:waypoint x="760" y="347" />
+        <di:waypoint x="725" y="347" />
+        <di:waypoint x="820" y="347" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="706" y="329" width="14" height="14" />
+          <dc:Bounds x="766" y="329" width="14" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0z34gj9_di" bpmnElement="Flow_0z34gj9">
-        <di:waypoint x="665" y="490" />
-        <di:waypoint x="760" y="490" />
+        <di:waypoint x="725" y="490" />
+        <di:waypoint x="820" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0l24gmf_di" bpmnElement="Flow_0l24gmf">
-        <di:waypoint x="860" y="347" />
-        <di:waypoint x="945" y="347" />
+        <di:waypoint x="920" y="347" />
+        <di:waypoint x="1005" y="347" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0xqhi7b_di" bpmnElement="Flow_0xqhi7b">
-        <di:waypoint x="860" y="490" />
-        <di:waypoint x="970" y="490" />
-        <di:waypoint x="970" y="372" />
+        <di:waypoint x="920" y="490" />
+        <di:waypoint x="1030" y="490" />
+        <di:waypoint x="1030" y="372" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mnc1q7_di" bpmnElement="Flow_0mnc1q7">
-        <di:waypoint x="970" y="322" />
-        <di:waypoint x="970" y="210" />
-        <di:waypoint x="1040" y="210" />
+        <di:waypoint x="1030" y="322" />
+        <di:waypoint x="1030" y="210" />
+        <di:waypoint x="1100" y="210" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="976" y="263" width="19" height="14" />
+          <dc:Bounds x="1036" y="263" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_17telko_di" bpmnElement="Flow_17telko">
-        <di:waypoint x="995" y="347" />
-        <di:waypoint x="1175" y="347" />
+        <di:waypoint x="1055" y="347" />
+        <di:waypoint x="1235" y="347" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1078" y="329" width="14" height="14" />
+          <dc:Bounds x="1138" y="329" width="14" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1bxhosp_di" bpmnElement="Flow_1bxhosp">
-        <di:waypoint x="1140" y="210" />
         <di:waypoint x="1200" y="210" />
-        <di:waypoint x="1200" y="322" />
+        <di:waypoint x="1260" y="210" />
+        <di:waypoint x="1260" y="322" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_02ym7xk_di" bpmnElement="Flow_02ym7xk">
-        <di:waypoint x="1225" y="347" />
-        <di:waypoint x="1305" y="347" />
+        <di:waypoint x="1285" y="347" />
+        <di:waypoint x="1365" y="347" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1icvsm0_di" bpmnElement="Flow_1icvsm0">
-        <di:waypoint x="1355" y="347" />
-        <di:waypoint x="1525" y="347" />
+        <di:waypoint x="1415" y="347" />
+        <di:waypoint x="1585" y="347" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1431" y="329" width="19" height="14" />
+          <dc:Bounds x="1491" y="329" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_10ide8o_di" bpmnElement="Flow_10ide8o">
-        <di:waypoint x="1330" y="322" />
-        <di:waypoint x="1330" y="210" />
+        <di:waypoint x="1390" y="322" />
         <di:waypoint x="1390" y="210" />
+        <di:waypoint x="1450" y="210" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1338" y="263" width="14" height="14" />
+          <dc:Bounds x="1398" y="263" width="14" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ditk9j_di" bpmnElement="Flow_1ditk9j">
-        <di:waypoint x="1490" y="210" />
         <di:waypoint x="1550" y="210" />
-        <di:waypoint x="1550" y="322" />
+        <di:waypoint x="1610" y="210" />
+        <di:waypoint x="1610" y="322" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0sglmgb_di" bpmnElement="Flow_0sglmgb">
-        <di:waypoint x="1575" y="347" />
-        <di:waypoint x="1672" y="347" />
+        <di:waypoint x="1635" y="347" />
+        <di:waypoint x="1732" y="347" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

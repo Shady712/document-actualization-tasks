@@ -33,6 +33,7 @@ dependencies {
 	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-context-indexer")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	// Kotlin
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -43,6 +44,9 @@ dependencies {
 	implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.18.0")
 	implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
 	testImplementation("org.camunda.bpm:camunda-bpm-assert:7.18.0")
+	testImplementation("org.camunda.bpm:camunda-engine-plugin-spin:7.18.0")
+	testImplementation("org.camunda.community.mockito:camunda-platform-7-mockito:6.18.0")
+	testImplementation("org.camunda.bpm:camunda-bpm-junit5:7.18.0")
 
 	// Database
 	implementation("org.postgresql:postgresql:42.2.27")
