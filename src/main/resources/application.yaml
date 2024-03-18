@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: tasks
+  datasource:
+    username: tasks-db
+    password: admin
+    url: jdbc:postgresql://localhost:5432/tasks

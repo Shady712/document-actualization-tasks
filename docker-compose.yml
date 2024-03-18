@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  postgres-tasks:
+    container_name: postgres_tasks
+    image: 'postgres:14'
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=tasks-db
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=tasks
