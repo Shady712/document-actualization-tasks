@@ -1,6 +1,6 @@
 package com.actualization.document.tasks.controller
 
-import com.actualization.document.tasks.client.TaskClient
+import com.actualization.document.tasks.client.ExampleClient
 import com.actualization.document.tasks.dto.ExampleResponseDto
 import com.actualization.document.tasks.service.CamundaEngineService
 import mu.KLogging
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/example")
 class ExampleController(
     private val camundaEngineService: CamundaEngineService,
-    private val taskClient: TaskClient
+    private val exampleClient: ExampleClient
 ) {
 
     @PostMapping("/start")
@@ -21,8 +21,8 @@ class ExampleController(
     }
 
     @PostMapping("/client")
-    fun client(): ExampleResponseDto {
-        return taskClient.example()
+    fun client(): ExampleResponseDto? {
+        return exampleClient.example()
     }
 
     companion object : KLogging() {

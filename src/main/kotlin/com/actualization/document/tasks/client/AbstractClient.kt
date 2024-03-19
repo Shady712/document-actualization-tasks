@@ -18,7 +18,7 @@ abstract class AbstractClient(
 
     private val client = OkHttpClient.Builder().build()
 
-    protected fun <T> doCall(request: Request, typeClass: Class<T>): T {
+    protected fun <T> doCall(request: Request, typeClass: Class<T>): T? {
         try {
             execute(request).use { response ->
                 checkResponseCode(response)

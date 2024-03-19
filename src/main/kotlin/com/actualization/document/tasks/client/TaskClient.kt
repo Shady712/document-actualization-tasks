@@ -1,26 +1,23 @@
 package com.actualization.document.tasks.client
 
-import com.actualization.document.tasks.dto.ExampleResponseDto
+import com.actualization.document.tasks.dto.TaskResponseDto
+import com.actualization.document.tasks.enumeration.TaskStatus
+import com.actualization.document.tasks.enumeration.TaskType
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KLogging
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.springframework.stereotype.Component
 
-@Component
 class TaskClient(
-    objectMapper: ObjectMapper
+    objectMapper: ObjectMapper,
 ) : AbstractClient(objectMapper, "Task", logger) {
 
-
-    fun example(): ExampleResponseDto {
+    fun getTask(clientId: String, taskType: TaskType, taskStatus: TaskStatus): TaskResponseDto? {
         val request = Request.Builder()
-            .post("".toRequestBody("application/json".toMediaType()))
-            .url("http://localhost:8080/api/v1/example/start")
+            .get()
+            .url("http://localhost:8080/tasks/find?clientId=$clientId&taskType=$taskType&status=$taskStatus")
             .build()
 
-        return doCall(request, ExampleResponseDto::class.java)
+        return doCall(request, TaskResponseDto::class.java)
     }
 
     companion object : KLogging()
