@@ -10,7 +10,7 @@ data class TaskResponseDto(
     @JsonProperty("clientId")
     val clientId: String?,
     @JsonProperty("status")
-    val status: String?,
+    val taskStatus: String?,
     @JsonProperty("childExtensions")
     val childExtensions: List<ChildExtensionResponseDto> = emptyList()
 )

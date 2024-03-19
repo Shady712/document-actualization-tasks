@@ -1,0 +1,7 @@
+{
+  "taskId": "someTaskId",
+  "taskType": "A",
+  "clientId": "1234",
+  "status": "READY",
+  "childExtensions": []
+}

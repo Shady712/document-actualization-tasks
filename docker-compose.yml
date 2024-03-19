@@ -10,3 +10,12 @@ services:
       - POSTGRES_USER=tasks-db
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=tasks
+
+  tasks-service-wiremock:
+    container_name: wiremock_tasks_service
+    image: 'wiremock/wiremock:latest'
+    ports:
+      - '8443:8080'
+    volumes:
+      - './config/wiremock/mappings:/home/wiremock/mappings'
+      - './config/wiremock/files:/home/wiremock/__files'

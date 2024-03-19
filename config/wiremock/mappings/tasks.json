@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/tasks/find?clientId=1234&taskType=A&status=READY"
+  },
+
+  "response": {
+    "status": 200,
+    "bodyFileName": "get_task_response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
