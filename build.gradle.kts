@@ -52,6 +52,11 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.2.27")
 	implementation("com.zaxxer:HikariCP")
 
+	// Client
+	implementation("io.github.openfeign:feign-core:12.2")
+	implementation("io.github.openfeign:feign-okhttp:12.2")
+	implementation("io.github.openfeign:feign-jackson:12.2")
+
 	// Utils
 	implementation("org.apache.commons:commons-lang3:3.12.0")
 
